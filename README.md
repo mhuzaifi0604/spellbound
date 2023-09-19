@@ -1,4 +1,7 @@
 # Spellbound
+
+A C2 framework for all your God Complex. A fully functional and integrated Botnet for remote command execution through user friendly UI.<br>
+
 Spellbound is a C2 (Command and Control) framework meant for creating a botnet. Spellbound is created in python and includes a payload generator (spellgen) to send to your target. Spellbound is capable of handling around 65000 bots at a time (depending on the machine).
 
 ![1670504818823](https://user-images.githubusercontent.com/88616338/221417940-74bbffa4-9a20-49d2-8f93-36de576d167e.jpg)
