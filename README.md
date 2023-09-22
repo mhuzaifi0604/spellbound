@@ -65,7 +65,7 @@ Spellbound is the actual C2 server, to which all bots connect. This is devloped 
 After the above steps, open up localhost in your browser, provide the IP for your listening interface and the port to listen on and your C2 will be ready to accept dem bots! 
 
 # Collaborators 
-- [Muhammad Huzaifa](https://github.com/huzaifi0604/)
+- [Abdullah Irfan](https://github.com/dingavinga1/)
 - [Aisha Irfan](https://github.com/aishairfan/)
 
 # Disclaimer
